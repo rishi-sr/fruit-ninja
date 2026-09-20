@@ -15,6 +15,7 @@ class AudioManager {
     this.ambientLFO = null;
     this.isAmbientPlaying = false;
     this.lastWhooshTime = 0;
+    this._distortionCurve = null;
   }
 
   init() {
@@ -26,12 +27,12 @@ class AudioManager {
 
       // Master output node
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+      this.masterGain.gain.setValueAtTime(0.9, this.ctx.currentTime);
       this.masterGain.connect(this.ctx.destination);
 
       // SFX bus
       this.sfxGain = this.ctx.createGain();
-      this.sfxGain.gain.setValueAtTime(this.isSoundEnabled ? 0.9 : 0, this.ctx.currentTime);
+      this.sfxGain.gain.setValueAtTime(this.isSoundEnabled ? 1.0 : 0, this.ctx.currentTime);
       this.sfxGain.connect(this.masterGain);
 
       // Music / Ambient bus
@@ -52,10 +53,23 @@ class AudioManager {
     }
   }
 
+  getDistortionCurve(amount = 35) {
+    if (this._distortionCurve) return this._distortionCurve;
+    const n = 44100;
+    const curve = new Float32Array(n);
+    const deg = Math.PI / 180;
+    for (let i = 0; i < n; ++i) {
+      const x = (i * 2) / n - 1;
+      curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+    }
+    this._distortionCurve = curve;
+    return curve;
+  }
+
   setSoundEnabled(enabled) {
     this.isSoundEnabled = enabled;
     if (this.sfxGain && this.ctx) {
-      this.sfxGain.gain.setTargetAtTime(enabled ? 0.9 : 0, this.ctx.currentTime, 0.05);
+      this.sfxGain.gain.setTargetAtTime(enabled ? 1.0 : 0, this.ctx.currentTime, 0.05);
     }
   }
 
@@ -131,53 +145,93 @@ class AudioManager {
 
   // Realistic organic fruit slicing sound
   playSlice(fruitType = 'default') {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
 
-    // 1. Blade cut transient (high snappy edge)
+    // 1. Razor blade cut transient (high snappy metallic katana slash)
     const bladeOsc = this.ctx.createOscillator();
     const bladeGain = this.ctx.createGain();
     bladeOsc.type = 'triangle';
-    bladeOsc.frequency.setValueAtTime(1400, t);
-    bladeOsc.frequency.exponentialRampToValueAtTime(220, t + 0.06);
+    bladeOsc.frequency.setValueAtTime(2400, t);
+    bladeOsc.frequency.exponentialRampToValueAtTime(240, t + 0.055);
 
-    bladeGain.gain.setValueAtTime(0.45, t);
-    bladeGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+    bladeGain.gain.setValueAtTime(0.7, t);
+    bladeGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
 
     bladeOsc.connect(bladeGain);
     bladeGain.connect(this.sfxGain);
     bladeOsc.start(t);
-    bladeOsc.stop(t + 0.075);
+    bladeOsc.stop(t + 0.065);
 
-    // 2. Juicy squish burst (bandpass filtered noise)
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.15);
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+    // 2. Razor edge friction hiss / air slice (crisp high-pass noise)
+    const frictionLen = Math.floor(this.ctx.sampleRate * 0.06);
+    const frictionBuf = this.ctx.createBuffer(1, frictionLen, this.ctx.sampleRate);
+    const frictionData = frictionBuf.getChannelData(0);
+    for (let i = 0; i < frictionLen; i++) {
+      frictionData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (frictionLen * 0.3));
     }
+    const frictionNoise = this.ctx.createBufferSource();
+    frictionNoise.buffer = frictionBuf;
+    const frictionFilter = this.ctx.createBiquadFilter();
+    frictionFilter.type = 'highpass';
+    frictionFilter.frequency.setValueAtTime(3400, t);
+    frictionFilter.frequency.exponentialRampToValueAtTime(1400, t + 0.055);
+    const frictionGain = this.ctx.createGain();
+    frictionGain.gain.setValueAtTime(0.65, t);
+    frictionGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+    frictionNoise.connect(frictionFilter);
+    frictionFilter.connect(frictionGain);
+    frictionGain.connect(this.sfxGain);
+    frictionNoise.start(t);
+    frictionNoise.stop(t + 0.065);
 
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
+    // 3. Meaty flesh cleavage thud (sub-low physical impact)
+    const thudOsc = this.ctx.createOscillator();
+    const thudGain = this.ctx.createGain();
+    thudOsc.type = 'sine';
+    const startThud = fruitType === 'watermelon' ? 240 : fruitType === 'apple' ? 320 : 280;
+    thudOsc.frequency.setValueAtTime(startThud, t);
+    thudOsc.frequency.exponentialRampToValueAtTime(60, t + 0.045);
 
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    const cutoff = fruitType === 'watermelon' ? 1200 : fruitType === 'kiwi' ? 2400 : 1800;
-    filter.frequency.setValueAtTime(cutoff, t);
-    filter.frequency.exponentialRampToValueAtTime(300, t + 0.14);
+    thudGain.gain.setValueAtTime(0.6, t);
+    thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+
+    thudOsc.connect(thudGain);
+    thudGain.connect(this.sfxGain);
+    thudOsc.start(t);
+    thudOsc.stop(t + 0.055);
+
+    // 4. Juicy organic flesh squish & splatter (resonant wet bandpass)
+    const squishDuration = fruitType === 'watermelon' ? 0.16 : fruitType === 'apple' ? 0.09 : 0.12;
+    const squishSize = Math.floor(this.ctx.sampleRate * squishDuration);
+    const squishBuffer = this.ctx.createBuffer(1, squishSize, this.ctx.sampleRate);
+    const squishData = squishBuffer.getChannelData(0);
+    for (let i = 0; i < squishSize; i++) {
+      squishData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (squishSize * 0.35));
+    }
+    const squishNoise = this.ctx.createBufferSource();
+    squishNoise.buffer = squishBuffer;
+
+    const squishFilter = this.ctx.createBiquadFilter();
+    squishFilter.type = 'bandpass';
+    squishFilter.Q.value = 3.2;
+    const cutoff = fruitType === 'watermelon' ? 1100 : fruitType === 'kiwi' ? 1900 : fruitType === 'apple' ? 2400 : 1600;
+    squishFilter.frequency.setValueAtTime(cutoff, t);
+    squishFilter.frequency.exponentialRampToValueAtTime(260, t + squishDuration * 0.9);
 
     const squishGain = this.ctx.createGain();
-    squishGain.gain.setValueAtTime(0.5, t);
-    squishGain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    squishGain.gain.setValueAtTime(0.8, t);
+    squishGain.gain.exponentialRampToValueAtTime(0.001, t + squishDuration);
 
-    noise.connect(filter);
-    filter.connect(squishGain);
+    squishNoise.connect(squishFilter);
+    squishFilter.connect(squishGain);
     squishGain.connect(this.sfxGain);
 
-    noise.start(t);
-    noise.stop(t + 0.15);
+    squishNoise.start(t);
+    squishNoise.stop(t + squishDuration + 0.01);
   }
 
   // Perfect slice: resonant crystalline chime
@@ -237,54 +291,120 @@ class AudioManager {
     osc.stop(t + 0.42);
   }
 
-  // Heavy bomb detonation
+  // Heavy cinematic bomb detonation blast
   playBomb() {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
 
-    // 1. Deep Sub Bass drop
+    // 1. Detonation transient shockwave (ear-splitting distorted crack)
+    const shockSize = Math.floor(this.ctx.sampleRate * 0.12);
+    const shockBuffer = this.ctx.createBuffer(1, shockSize, this.ctx.sampleRate);
+    const shockData = shockBuffer.getChannelData(0);
+    for (let i = 0; i < shockSize; i++) {
+      shockData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (shockSize * 0.18));
+    }
+    const shockNoise = this.ctx.createBufferSource();
+    shockNoise.buffer = shockBuffer;
+
+    // Distortion saturation for intense violent blast
+    const distortion = this.ctx.createWaveShaper();
+    distortion.curve = this.getDistortionCurve(35);
+    distortion.oversample = '2x';
+
+    const shockFilter = this.ctx.createBiquadFilter();
+    shockFilter.type = 'bandpass';
+    shockFilter.frequency.setValueAtTime(2200, t);
+    shockFilter.frequency.exponentialRampToValueAtTime(300, t + 0.11);
+    shockFilter.Q.value = 2.0;
+
+    const shockGain = this.ctx.createGain();
+    shockGain.gain.setValueAtTime(1.2, t);
+    shockGain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+
+    shockNoise.connect(distortion);
+    distortion.connect(shockFilter);
+    shockFilter.connect(shockGain);
+    shockGain.connect(this.sfxGain);
+
+    shockNoise.start(t);
+    shockNoise.stop(t + 0.13);
+
+    // 2. High-impact gunpowder ignition snap (instant percussion)
+    const snapOsc = this.ctx.createOscillator();
+    const snapGain = this.ctx.createGain();
+    snapOsc.type = 'square';
+    snapOsc.frequency.setValueAtTime(450, t);
+    snapOsc.frequency.exponentialRampToValueAtTime(60, t + 0.035);
+    snapGain.gain.setValueAtTime(0.8, t);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    snapOsc.connect(snapGain);
+    snapGain.connect(this.sfxGain);
+    snapOsc.start(t);
+    snapOsc.stop(t + 0.045);
+
+    // 3. Deep concussive sub-bass drop (chest thumping shockwave)
     const subOsc = this.ctx.createOscillator();
     const subGain = this.ctx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(140, t);
-    subOsc.frequency.exponentialRampToValueAtTime(30, t + 0.5);
+    subOsc.frequency.setValueAtTime(220, t);
+    subOsc.frequency.exponentialRampToValueAtTime(32, t + 0.65);
 
-    subGain.gain.setValueAtTime(0.9, t);
-    subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+    subGain.gain.setValueAtTime(1.3, t);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.75);
 
     subOsc.connect(subGain);
     subGain.connect(this.sfxGain);
     subOsc.start(t);
-    subOsc.stop(t + 0.56);
+    subOsc.stop(t + 0.78);
 
-    // 2. Explosion noise burst
-    const bufferSize = Math.floor(this.ctx.sampleRate * 0.4);
-    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.2));
+    // 4. Mid-range saturation punch (critical for mobile phone speakers!)
+    const midOsc = this.ctx.createOscillator();
+    const midGain = this.ctx.createGain();
+    midOsc.type = 'triangle';
+    midOsc.frequency.setValueAtTime(160, t);
+    midOsc.frequency.exponentialRampToValueAtTime(45, t + 0.45);
+
+    midGain.gain.setValueAtTime(0.9, t);
+    midGain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+
+    midOsc.connect(midGain);
+    midGain.connect(this.sfxGain);
+    midOsc.start(t);
+    midOsc.stop(t + 0.52);
+
+    // 5. Fireball roar & burning debris rumble tail
+    const roarDuration = 0.95;
+    const roarSize = Math.floor(this.ctx.sampleRate * roarDuration);
+    const roarBuffer = this.ctx.createBuffer(1, roarSize, this.ctx.sampleRate);
+    const roarData = roarBuffer.getChannelData(0);
+    for (let i = 0; i < roarSize; i++) {
+      // Noise with random crackling spikes in the tail
+      const env = Math.exp(-i / (roarSize * 0.28));
+      const crackle = Math.random() > 0.985 ? (Math.random() * 2 - 1) * 1.5 : 0;
+      roarData[i] = ((Math.random() * 2 - 1) * 0.8 + crackle) * env;
     }
 
-    const noise = this.ctx.createBufferSource();
-    noise.buffer = buffer;
+    const roarNoise = this.ctx.createBufferSource();
+    roarNoise.buffer = roarBuffer;
 
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(800, t);
-    filter.frequency.exponentialRampToValueAtTime(80, t + 0.38);
+    const roarFilter = this.ctx.createBiquadFilter();
+    roarFilter.type = 'lowpass';
+    roarFilter.frequency.setValueAtTime(1600, t);
+    roarFilter.frequency.exponentialRampToValueAtTime(50, t + roarDuration * 0.85);
 
-    const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.7, t);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    const roarGain = this.ctx.createGain();
+    roarGain.gain.setValueAtTime(1.0, t);
+    roarGain.gain.exponentialRampToValueAtTime(0.001, t + roarDuration);
 
-    noise.connect(filter);
-    filter.connect(noiseGain);
-    noiseGain.connect(this.sfxGain);
+    roarNoise.connect(roarFilter);
+    roarFilter.connect(roarGain);
+    roarGain.connect(this.sfxGain);
 
-    noise.start(t);
-    noise.stop(t + 0.42);
+    roarNoise.start(t);
+    roarNoise.stop(t + roarDuration + 0.05);
   }
 
   // Game over sound

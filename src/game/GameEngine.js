@@ -187,6 +187,7 @@ export class GameEngine {
 
   // Pointer / Touch Event Routing
   handleTouchStart(x, y) {
+    audioManager.resume();
     if (!this.isRunning || this.isPaused) return;
     this.sliceSystem.startStroke(x, y);
   }
@@ -482,6 +483,18 @@ export class GameEngine {
         );
       }
 
+      // Always play visceral slice sound for each sliced fruit
+      for (let i = 0; i < slicedFruits.length; i++) {
+        const fruitType = slicedFruits[i].fruit.type;
+        if (i === 0) {
+          audioManager.playSlice(fruitType);
+        } else {
+          setTimeout(() => {
+            audioManager.playSlice(fruitType);
+          }, i * 25);
+        }
+      }
+
       // Sound & Haptics based on combo level
       if (this.combo >= 2) {
         audioManager.playCombo(this.combo);
@@ -495,7 +508,6 @@ export class GameEngine {
           true
         );
       } else {
-        audioManager.playSlice(slicedFruits[0].fruit.type);
         hapticManager.light();
         const center = slicedFruits[0].cutPoint;
         this.particleSystem.spawnText(center.x, center.y - 10, `+${waveSlicePoints}`, '#FFFFFF', false);

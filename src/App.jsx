@@ -34,10 +34,14 @@ export default function App() {
     };
 
     window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+    window.addEventListener('pointerdown', unlockAudio, { once: true });
+    window.addEventListener('mousedown', unlockAudio, { once: true });
     window.addEventListener('click', unlockAudio, { once: true });
 
     return () => {
       window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('mousedown', unlockAudio);
       window.removeEventListener('click', unlockAudio);
     };
   }, []);
