@@ -30,7 +30,7 @@ class AudioManager {
       this.masterGain.gain.setValueAtTime(0.9, this.ctx.currentTime);
       this.masterGain.connect(this.ctx.destination);
 
-      // SFX bus
+      // SFX bus (calibrated at 1.0 for punchy tactile impact)
       this.sfxGain = this.ctx.createGain();
       this.sfxGain.gain.setValueAtTime(this.isSoundEnabled ? 1.0 : 0, this.ctx.currentTime);
       this.sfxGain.connect(this.masterGain);
@@ -82,8 +82,9 @@ class AudioManager {
 
   // Play a short tactile UI click
   playButton() {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
@@ -93,7 +94,7 @@ class AudioManager {
     osc.frequency.setValueAtTime(800, t);
     osc.frequency.exponentialRampToValueAtTime(300, t + 0.04);
 
-    gain.gain.setValueAtTime(0.3, t);
+    gain.gain.setValueAtTime(0.35, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
 
     osc.connect(gain);
@@ -105,11 +106,12 @@ class AudioManager {
 
   // Blade swoosh sound on fast swipe
   playWhoosh(velocity = 1) {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     const now = performance.now();
     if (now - this.lastWhooshTime < 140) return; // rate limit whooshes
     this.lastWhooshTime = now;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
     const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
@@ -132,7 +134,7 @@ class AudioManager {
 
     const gain = this.ctx.createGain();
     gain.gain.setValueAtTime(0.001, t);
-    gain.gain.linearRampToValueAtTime(0.25, t + 0.03);
+    gain.gain.linearRampToValueAtTime(0.3, t + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
 
     noise.connect(filter);
@@ -143,7 +145,7 @@ class AudioManager {
     noise.stop(t + 0.125);
   }
 
-  // Realistic organic fruit slicing sound
+  // Realistic organic fruit slicing sound with multi-layer acoustic depth
   playSlice(fruitType = 'default') {
     if (!this.isSoundEnabled) return;
     this.resume();
@@ -236,8 +238,9 @@ class AudioManager {
 
   // Perfect slice: resonant crystalline chime
   playPerfect() {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
     const frequencies = [880, 1320, 1760]; // A5, E6, A6
@@ -264,8 +267,9 @@ class AudioManager {
 
   // Combo slice: ascending harmonic chime
   playCombo(comboCount = 2) {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
     // Pentatonic scale degrees: C, D, E, G, A
@@ -281,7 +285,7 @@ class AudioManager {
     osc.frequency.setValueAtTime(freq, t);
     osc.frequency.exponentialRampToValueAtTime(freq * 1.05, t + 0.1);
 
-    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.setValueAtTime(0.4, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
 
     osc.connect(gain);
@@ -409,8 +413,9 @@ class AudioManager {
 
   // Game over sound
   playGameOver() {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
     const chord = [329.63, 261.63, 196.0]; // E4, C4, G3 descending
@@ -442,8 +447,9 @@ class AudioManager {
 
   // Progression / Tier upgrade chime (harmonic ascending chime)
   playLevelUp() {
-    if (!this.isSoundEnabled || !this.ctx) return;
+    if (!this.isSoundEnabled) return;
     this.resume();
+    if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
     const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
@@ -522,4 +528,3 @@ class AudioManager {
 
 export const audioManager = new AudioManager();
 export default audioManager;
-

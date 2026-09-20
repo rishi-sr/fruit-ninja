@@ -93,10 +93,10 @@ export class SliceSystem {
 
       if (t <= 0.01) continue;
 
-      // Outer volt-lime halo
-      ctx.shadowColor = '#C8FF3D';
+      // Outer golden katana halo
+      ctx.shadowColor = '#FFB800';
       ctx.shadowBlur = 10 * t;
-      ctx.strokeStyle = `rgba(200, 255, 61, ${0.4 * t})`;
+      ctx.strokeStyle = `rgba(255, 184, 0, ${0.45 * t})`;
       ctx.lineWidth = Math.max(1, 7 * t);
 
       ctx.beginPath();
@@ -119,7 +119,7 @@ export class SliceSystem {
     // Glistening tip point
     if (this.points.length > 0) {
       const head = pts[pts.length - 1];
-      ctx.shadowColor = '#C8FF3D';
+      ctx.shadowColor = '#FFB800';
       ctx.shadowBlur = 14;
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();

@@ -328,12 +328,12 @@ export class GameEngine {
         this.width * 0.5,
         this.height * 0.32,
         `SPEED ${speedPercent}% • FRUITS ${fruitPercent}%`,
-        '#C8FF3D',
+        '#FFB800',
         true
       );
       audioManager.playLevelUp();
       hapticManager.medium();
-      this.triggerFlash('rgba(200, 255, 61, 0.25)');
+      this.triggerFlash('rgba(255, 184, 0, 0.25)');
     }
 
     // Bomb progression tier upgrade check (after 500 pts: +3%, then reaches 6% max)
@@ -457,12 +457,12 @@ export class GameEngine {
         this.lastProgressionTier = progression.tiers;
         audioManager.playLevelUp();
         hapticManager.medium();
-        this.triggerFlash('rgba(200, 255, 61, 0.3)');
+        this.triggerFlash('rgba(255, 184, 0, 0.3)');
         this.particleSystem.spawnText(
           this.width * 0.5,
           this.height * 0.32,
           `SPEED ${progression.speedPercent}% • FRUITS ${progression.fruitPercent}%`,
-          '#C8FF3D',
+          '#FFB800',
           true
         );
       }
@@ -504,7 +504,7 @@ export class GameEngine {
           center.x,
           center.y - 20,
           `${this.combo} COMBO +${waveSlicePoints}`,
-          '#C8FF3D',
+          '#FFB800',
           true
         );
       } else {

@@ -149,9 +149,9 @@ class FloatingText {
 
     if (this.isCombo) {
       ctx.font = '800 24px "Outfit", sans-serif';
-      ctx.shadowColor = '#C8FF3D';
+      ctx.shadowColor = '#FFB800';
       ctx.shadowBlur = 12;
-      ctx.fillStyle = '#C8FF3D';
+      ctx.fillStyle = '#FFB800';
       ctx.fillText(this.text, this.x, this.y);
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#FFFFFF';

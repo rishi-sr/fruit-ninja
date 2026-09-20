@@ -152,10 +152,10 @@ class MenuFruit {
       // Outer pulsing celestial ring
       ctx.save();
       ctx.rotate(t * 0.8);
-      ctx.strokeStyle = 'rgba(200, 255, 61, 0.45)';
+      ctx.strokeStyle = 'rgba(255, 184, 0, 0.55)';
       ctx.lineWidth = 2.5;
       ctx.setLineDash([14, 8, 4, 8]);
-      ctx.shadowColor = '#C8FF3D';
+      ctx.shadowColor = '#FFB800';
       ctx.shadowBlur = 14;
       ctx.beginPath();
       ctx.arc(0, 0, ringRadius, 0, Math.PI * 2);
