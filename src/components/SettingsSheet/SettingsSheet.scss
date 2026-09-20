@@ -1,0 +1,186 @@
+@use '../../styles/variables.scss' as *;
+
+.settings-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: $z-sheet;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.settings-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.settings-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: rgba(15, 18, 23, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 20px calc(24px + #{$safe-bottom});
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.7);
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+  margin: 0 auto 16px;
+  cursor: pointer;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  .sheet-category {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: $color-accent;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .sheet-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: $color-text-primary;
+    margin-top: 2px;
+  }
+
+  .sheet-close-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: $color-text-secondary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:hover, &:active {
+      background: rgba(255, 255, 255, 0.12);
+      color: $color-text-primary;
+    }
+  }
+}
+
+.sheet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.sheet-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: $radius-md;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  min-height: 54px;
+  transition: background 0.15s ease;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .option-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .option-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-text-muted;
+      transition: color 0.2s ease, background 0.2s ease;
+
+      &.active {
+        color: $color-accent;
+        background: rgba(200, 255, 61, 0.1);
+      }
+    }
+
+    .option-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: $color-text-primary;
+    }
+  }
+
+  // Toggle Switch
+  .toggle-track {
+    width: 48px;
+    height: 28px;
+    border-radius: 14px;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.25s ease;
+
+    &.on {
+      background: $color-accent;
+      justify-content: flex-end;
+
+      .toggle-thumb {
+        background: #050608;
+      }
+    }
+
+    &.off {
+      background: rgba(255, 255, 255, 0.12);
+      justify-content: flex-start;
+
+      .toggle-thumb {
+        background: #FFFFFF;
+      }
+    }
+
+    .toggle-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  font-family: $font-mono;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: $color-text-muted;
+}
+

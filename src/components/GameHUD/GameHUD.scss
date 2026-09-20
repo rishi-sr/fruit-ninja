@@ -1,0 +1,206 @@
+@use '../../styles/variables.scss' as *;
+
+.game-hud-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-hud;
+  padding: calc(14px + #{$safe-top}) 18px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none; // Allow swipe inputs beneath HUD
+}
+
+.hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  .hud-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+  }
+
+  .hud-score-value {
+    font-family: $font-mono;
+    font-size: 26px;
+    font-weight: 700;
+    color: $color-text-primary;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  }
+
+  .hud-badges-row {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .hud-speed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(200, 255, 61, 0.14);
+    border: 1px solid rgba(200, 255, 61, 0.35);
+    border-radius: $radius-full;
+    padding: 2px 7px;
+    width: fit-content;
+    font-family: $font-mono;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: $color-accent;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 10px rgba(200, 255, 61, 0.15);
+
+    .badge-bolt {
+      font-size: 9px;
+    }
+  }
+
+  .hud-bomb-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(255, 59, 48, 0.14);
+    border: 1px solid rgba(255, 59, 48, 0.38);
+    border-radius: $radius-full;
+    padding: 2px 7px;
+    width: fit-content;
+    font-family: $font-mono;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #FF453A;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 10px rgba(255, 59, 48, 0.2);
+
+    .badge-flame {
+      font-size: 9px;
+    }
+  }
+}
+
+.hud-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 36px;
+}
+
+.combo-badge {
+  display: inline-flex;
+  align-items: baseline;
+  background: rgba(200, 255, 61, 0.12);
+  border: 1px solid rgba(200, 255, 61, 0.35);
+  padding: 4px 12px;
+  border-radius: $radius-full;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 16px rgba(200, 255, 61, 0.2);
+
+  .combo-x {
+    font-size: 14px;
+    font-weight: 800;
+    color: $color-accent;
+    margin-right: 2px;
+  }
+
+  .combo-number {
+    font-family: $font-mono;
+    font-size: 20px;
+    font-weight: 800;
+    color: $color-accent;
+    letter-spacing: 0.5px;
+  }
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lives-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 18, 23, 0.6);
+  padding: 6px 10px;
+  border-radius: $radius-full;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.heart-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, filter 0.3s ease;
+
+  &.lost {
+    animation: heart-break 0.4s forwards ease-out;
+    opacity: 0.3;
+  }
+
+  &.active {
+    filter: drop-shadow(0 0 4px rgba(255, 59, 48, 0.5));
+  }
+}
+
+.timer-display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+
+  .timer-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: $color-text-secondary;
+  }
+
+  .timer-digits {
+    font-family: $font-mono;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: $color-text-primary;
+
+    &.urgent {
+      color: $color-danger;
+      animation: pulse-glow 0.8s infinite ease-in-out;
+    }
+  }
+}
+
+.hud-pause-btn {
+  pointer-events: auto;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: rgba(15, 18, 23, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: $color-text-secondary;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+
+  &:hover, &:active {
+    color: $color-text-primary;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+

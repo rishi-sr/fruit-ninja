@@ -1,0 +1,36 @@
+// BLADE Design System Tokens
+$color-bg-base: #050608;
+$color-bg-surface: #080B10;
+$color-bg-elevated: #0D1117;
+$color-bg-sheet: rgba(15, 18, 23, 0.94);
+$color-bg-glass: rgba(18, 22, 29, 0.65);
+
+$color-text-primary: #FFFFFF;
+$color-text-secondary: #9299A3;
+$color-text-muted: #565D68;
+
+$color-accent: #C8FF3D;       // Sharp volt lime - used sparingly for precision feedback
+$color-accent-glow: rgba(200, 255, 61, 0.35);
+$color-danger: #FF3B30;       // Apple crimson danger
+$color-danger-glow: rgba(255, 59, 48, 0.4);
+$color-gold: #FFD60A;
+
+$font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+$font-mono: 'Space Grotesk', -apple-system, monospace;
+
+$safe-top: env(safe-area-inset-top, 0px);
+$safe-bottom: env(safe-area-inset-bottom, 0px);
+$safe-left: env(safe-area-inset-left, 0px);
+$safe-right: env(safe-area-inset-right, 0px);
+
+$radius-sm: 8px;
+$radius-md: 14px;
+$radius-lg: 22px;
+$radius-full: 9999px;
+
+$z-canvas: 1;
+$z-hud: 20;
+$z-modal: 50;
+$z-sheet: 80;
+$z-rotate: 1000;
+
