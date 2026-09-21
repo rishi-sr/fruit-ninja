@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './styles/global.scss';
 import './styles/animations.scss';
+const rootElement = document.getElementById('root');
 
 // Dynamic cache-invalidation to force browser tab to immediately show Fruit Ninja icon
 try {
