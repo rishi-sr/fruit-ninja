@@ -1,163 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
   <defs>
     <!-- Background Gradient -->
-    <radialGradient id="bgGrad" cx="50%" cy="38%" r="65%">
-      <stop offset="0%" stop-color="#2A180E" />
-      <stop offset="65%" stop-color="#140A06" />
-      <stop offset="100%" stop-color="#080402" />
+    <radialGradient id="favBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2C1B12" />
+      <stop offset="100%" stop-color="#0E0704" />
     </radialGradient>
 
-    <!-- Golden Rim Gradient -->
-    <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFF0B3" />
-      <stop offset="40%" stop-color="#FFB800" />
-      <stop offset="80%" stop-color="#FF6B00" />
-      <stop offset="100%" stop-color="#FFB800" />
+    <!-- Watermelon Flesh -->
+    <linearGradient id="favFlesh" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF385C" />
+      <stop offset="100%" stop-color="#D90429" />
     </linearGradient>
 
-    <!-- Watermelon Flesh Gradient -->
-    <radialGradient id="melonFlesh" cx="45%" cy="40%" r="60%">
-      <stop offset="0%" stop-color="#FF4D6D" />
-      <stop offset="65%" stop-color="#E61E42" />
-      <stop offset="100%" stop-color="#C01032" />
-    </radialGradient>
-
-    <!-- Rind Green Gradient -->
-    <linearGradient id="melonRind" x1="0%" y1="0%" x2="0%" y2="100%">
+    <!-- Rind Green -->
+    <linearGradient id="favRind" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#4ADE80" />
-      <stop offset="50%" stop-color="#22C55E" />
-      <stop offset="100%" stop-color="#15803D" />
+      <stop offset="100%" stop-color="#166534" />
     </linearGradient>
 
-    <!-- White Inner Rind -->
-    <linearGradient id="innerRind" x1="0%" y1="0%" x2="0%" y2="100%">
+    <!-- Katana Steel -->
+    <linearGradient id="favSteel" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#DCFCE7" />
-    </linearGradient>
-
-    <!-- Katana Steel Gradient -->
-    <linearGradient id="bladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="35%" stop-color="#E2E8F0" />
-      <stop offset="70%" stop-color="#CBD5E1" />
+      <stop offset="60%" stop-color="#E2E8F0" />
       <stop offset="100%" stop-color="#94A3B8" />
     </linearGradient>
-
-    <!-- Slash Beam Glow Gradient -->
-    <linearGradient id="slashBeam" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="rgba(255, 230, 150, 0)" />
-      <stop offset="25%" stop-color="rgba(255, 184, 0, 0.5)" />
-      <stop offset="50%" stop-color="#FFFFFF" />
-      <stop offset="75%" stop-color="rgba(255, 184, 0, 0.5)" />
-      <stop offset="100%" stop-color="rgba(255, 230, 150, 0)" />
-    </linearGradient>
-
-    <!-- Seed Texture -->
-    <linearGradient id="seedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#331A15" />
-      <stop offset="100%" stop-color="#120502" />
-    </linearGradient>
-
-    <!-- Soft Drop Shadows -->
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.85" />
-    </filter>
-    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="8" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
   </defs>
 
-  <!-- Base App Tile (Modern Squircle) -->
-  <rect width="512" height="512" rx="124" fill="url(#bgGrad)" />
-  <rect width="500" height="500" x="6" y="6" rx="120" fill="none" stroke="url(#goldRim)" stroke-width="10" stroke-opacity="0.9" />
+  <!-- Dark Arcade Tile with Gold Border -->
+  <rect width="64" height="64" rx="16" fill="url(#favBg)" />
+  <rect width="60" height="60" x="2" y="2" rx="14" fill="none" stroke="#FFB800" stroke-width="2" stroke-opacity="0.85" />
 
-  <!-- Ambient Golden Center Sheen -->
-  <circle cx="256" cy="256" r="170" fill="#FFB800" opacity="0.08" filter="url(#glow)" />
+  <!-- Sliced Watermelon Wedge -->
+  <!-- Outer Rind -->
+  <path d="M 12 36 A 22 22 0 0 0 52 36 Z" fill="url(#favRind)" />
+  <!-- Inner White Rind Layer -->
+  <path d="M 14 36 A 20 20 0 0 0 50 36 Z" fill="#F0FDF4" />
+  <!-- Juicy Red Flesh -->
+  <path d="M 16 36 A 18 18 0 0 0 48 36 Z" fill="url(#favFlesh)" />
 
-  <!-- Sliced Watermelon Group (Shifted & Rotating Halves) -->
-  <g filter="url(#shadow)">
-    <!-- UPPER HALF (Left/Top piece floating up-left) -->
-    <g transform="translate(244, 240) rotate(-14) translate(-244, -240)">
-      <!-- Outer Rind Arch -->
-      <path d="M 130 240 A 136 136 0 0 1 370 240 Z" fill="url(#melonRind)" />
-      <!-- Inner Light Rind Arch -->
-      <path d="M 140 240 A 124 124 0 0 1 360 240 Z" fill="url(#innerRind)" />
-      <!-- Juicy Red Flesh Arch -->
-      <path d="M 148 240 A 114 114 0 0 1 352 240 Z" fill="url(#melonFlesh)" />
+  <!-- Seeds -->
+  <circle cx="25" cy="41" r="1.6" fill="#180702" />
+  <circle cx="32" cy="45" r="1.6" fill="#180702" />
+  <circle cx="39" cy="41" r="1.6" fill="#180702" />
 
-      <!-- Seeds on Upper Half -->
-      <!-- Seed 1 -->
-      <path d="M 195 210 Q 192 195 197 190 Q 202 195 199 210 Z" fill="url(#seedGrad)" />
-      <circle cx="196" cy="195" r="1.5" fill="#FFFFFF" opacity="0.7" />
-      <!-- Seed 2 -->
-      <path d="M 252 175 Q 248 160 253 155 Q 258 160 255 175 Z" fill="url(#seedGrad)" />
-      <circle cx="252" cy="160" r="1.5" fill="#FFFFFF" opacity="0.7" />
-      <!-- Seed 3 -->
-      <path d="M 306 205 Q 302 190 307 185 Q 312 190 309 205 Z" fill="url(#seedGrad)" />
-      <circle cx="306" cy="190" r="1.5" fill="#FFFFFF" opacity="0.7" />
-    </g>
+  <!-- Juice Droplets -->
+  <circle cx="21" cy="27" r="1.8" fill="#FF385C" />
+  <circle cx="43" cy="25" r="2" fill="#FF385C" />
 
-    <!-- LOWER HALF (Right/Bottom piece sliding down-right) -->
-    <g transform="translate(268, 272) rotate(14) translate(-268, -272)">
-      <!-- Outer Rind Arch (Lower) -->
-      <path d="M 130 272 A 136 136 0 0 0 370 272 Z" fill="url(#melonRind)" />
-      <!-- Inner Light Rind Arch -->
-      <path d="M 140 272 A 124 124 0 0 0 360 272 Z" fill="url(#innerRind)" />
-      <!-- Juicy Red Flesh Arch -->
-      <path d="M 148 272 A 114 114 0 0 0 352 272 Z" fill="url(#melonFlesh)" />
+  <!-- Diagonal Golden Katana Slash Trail -->
+  <line x1="56" y1="8" x2="8" y2="56" stroke="#FFB800" stroke-width="4.5" stroke-linecap="round" opacity="0.6" />
+  <!-- Gleaming Razor Katana Blade -->
+  <line x1="56" y1="8" x2="8" y2="56" stroke="url(#favSteel)" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="55" y1="9" x2="10" y2="54" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" />
 
-      <!-- Seeds on Lower Half -->
-      <!-- Seed 4 -->
-      <path d="M 215 295 Q 212 310 217 315 Q 222 310 219 295 Z" fill="url(#seedGrad)" />
-      <circle cx="216" cy="310" r="1.5" fill="#FFFFFF" opacity="0.7" />
-      <!-- Seed 5 -->
-      <path d="M 275 320 Q 271 335 276 340 Q 281 335 278 320 Z" fill="url(#seedGrad)" />
-      <circle cx="275" cy="335" r="1.5" fill="#FFFFFF" opacity="0.7" />
-      <!-- Seed 6 -->
-      <path d="M 320 290 Q 316 305 321 310 Q 326 305 323 290 Z" fill="url(#seedGrad)" />
-      <circle cx="320" cy="305" r="1.5" fill="#FFFFFF" opacity="0.7" />
-    </g>
-  </g>
-
-  <!-- Juice Droplets / Splatters Scattering from Cut -->
-  <g fill="#FF2A4D">
-    <circle cx="170" cy="254" r="8" opacity="0.95" />
-    <circle cx="152" cy="270" r="5" opacity="0.85" />
-    <circle cx="335" cy="245" r="9" opacity="0.95" />
-    <circle cx="355" cy="235" r="5" opacity="0.8" />
-    <circle cx="240" cy="265" r="7" opacity="0.9" />
-    <circle cx="280" cy="248" r="6" opacity="0.9" />
-  </g>
-  <g fill="#FFAEC0">
-    <circle cx="168" cy="252" r="2.5" />
-    <circle cx="333" cy="243" r="3" />
-  </g>
-
-  <!-- DIAGONAL KATANA BLADE & ENERGY TRAIL -->
-  <!-- 1. Broad Golden Energy Trail -->
-  <path d="M 455 55 L 435 50 L 55 435 L 75 455 Z" fill="url(#slashBeam)" opacity="0.85" filter="url(#glow)" />
-
-  <!-- 2. Gleaming Razor Katana Blade -->
-  <path d="M 465 45 L 440 60 L 52 450 L 68 468 L 472 65 Z" fill="url(#bladeSteel)" />
-  <!-- Blade Edge Specular Highlight Line -->
-  <line x1="472" y1="48" x2="58" y2="462" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" />
-
-  <!-- 3. Central Blade Spark / 4-Point Star Gleam -->
-  <g transform="translate(256, 256)" filter="url(#glow)">
-    <!-- Amber aura -->
-    <circle cx="0" cy="0" r="28" fill="#FFB800" opacity="0.4" />
-    <circle cx="0" cy="0" r="12" fill="#FFFFFF" opacity="0.8" />
-
-    <!-- 4-point Diamond Star -->
-    <path d="M 0 -36 Q 0 -6 30 0 Q 0 6 0 36 Q 0 6 -30 0 Q 0 -6 0 -36 Z" fill="#FFFFFF" />
-    <!-- Secondary Cross Spark -->
-    <path d="M 0 -18 Q 0 -3 15 0 Q 0 3 0 18 Q 0 3 -15 0 Q 0 -3 0 -18 Z" fill="#FFE082" transform="rotate(45)" />
-  </g>
-
-  <!-- Blade Tip Gleam Spark -->
-  <g transform="translate(430, 85)">
-    <circle cx="0" cy="0" r="6" fill="#FFFFFF" opacity="0.9" />
-    <path d="M 0 -14 Q 0 -2 12 0 Q 0 2 0 14 Q 0 2 -12 0 Q 0 -2 0 -14 Z" fill="#FFFFFF" />
+  <!-- Central Blade Spark / 4-Point Star Gleam -->
+  <g transform="translate(32, 32)">
+    <circle cx="0" cy="0" r="3.5" fill="#FFB800" opacity="0.5" />
+    <path d="M 0 -6 Q 0 -1 5 0 Q 0 1 0 6 Q 0 1 -5 0 Q 0 -1 0 -6 Z" fill="#FFFFFF" />
   </g>
 </svg>
