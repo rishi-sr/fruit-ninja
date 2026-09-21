@@ -83,3 +83,4 @@ export default function LoaderScreen({ progress = 0 }) {
     </motion.div>
   );
 }
+

@@ -66,7 +66,8 @@ class AudioManager {
 
   // Preload and decode user's slice.mp3 file
   loadSliceAudio() {
-    if (this.sliceBuffer || this.isSliceLoading) return;
+    if (this.sliceBuffer) return Promise.resolve(this.sliceBuffer);
+    if (this.isSliceLoading && this._slicePromise) return this._slicePromise;
     this.isSliceLoading = true;
 
     const rawBase = import.meta.env.BASE_URL || '/';
@@ -87,7 +88,7 @@ class AudioManager {
       this.init();
     }
 
-    fetch(sliceUrl)
+    this._slicePromise = fetch(sliceUrl)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.arrayBuffer();
@@ -101,11 +102,15 @@ class AudioManager {
       .then((decoded) => {
         this.sliceBuffer = decoded;
         this.isSliceLoading = false;
+        return decoded;
       })
       .catch((err) => {
         console.warn('slice.mp3 preload/decode note:', err);
         this.isSliceLoading = false;
+        return null;
       });
+
+    return this._slicePromise;
   }
 
   getDistortionCurve(amount = 35) {

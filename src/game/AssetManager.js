@@ -60,8 +60,8 @@ class AssetManager {
     };
 
     // Preload slice audio buffer polyphonically
-    const audioPromise = audioManager
-      .loadSliceAudio()
+    const audioPromise = Promise.resolve()
+      .then(() => audioManager.loadSliceAudio())
       .then(() => notify('sliceAudio'))
       .catch(() => notify('sliceAudio'));
 
