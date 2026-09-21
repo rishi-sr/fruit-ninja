@@ -27,10 +27,13 @@ export default function App() {
     sessionKey
   } = useGameState();
 
-  // Unlock AudioContext on first touch / click
+  // Unlock AudioContext & preload slice.mp3 audio
   useEffect(() => {
+    audioManager.loadSliceAudio();
+
     const unlockAudio = () => {
       audioManager.resume();
+      audioManager.loadSliceAudio();
     };
 
     window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });

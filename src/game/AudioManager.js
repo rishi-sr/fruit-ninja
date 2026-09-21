@@ -1,4 +1,4 @@
-// AudioManager - Studio-grade Procedural Web Audio API Sound Engine
+// AudioManager - Studio-grade Procedural & Sampled Web Audio API Sound Engine
 
 class AudioManager {
   constructor() {
@@ -16,6 +16,11 @@ class AudioManager {
     this.isAmbientPlaying = false;
     this.lastWhooshTime = 0;
     this._distortionCurve = null;
+
+    // slice.mp3 audio assets
+    this.sliceBuffer = null;
+    this.isSliceLoading = false;
+    this.sliceAudioElement = null;
   }
 
   init() {
@@ -39,6 +44,9 @@ class AudioManager {
       this.musicGain = this.ctx.createGain();
       this.musicGain.gain.setValueAtTime(this.isMusicEnabled ? 0.35 : 0, this.ctx.currentTime);
       this.musicGain.connect(this.masterGain);
+
+      // Preload slice.mp3 immediately
+      this.loadSliceAudio();
     } catch (e) {
       console.warn('Web Audio API not supported', e);
     }
@@ -51,6 +59,53 @@ class AudioManager {
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
+    if (!this.sliceBuffer && !this.isSliceLoading) {
+      this.loadSliceAudio();
+    }
+  }
+
+  // Preload and decode user's slice.mp3 file
+  loadSliceAudio() {
+    if (this.sliceBuffer || this.isSliceLoading) return;
+    this.isSliceLoading = true;
+
+    const rawBase = import.meta.env.BASE_URL || '/';
+    const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+    const sliceUrl = `${base}assets/sound/slice.mp3`;
+
+    // HTML5 Audio element backup
+    try {
+      if (!this.sliceAudioElement) {
+        this.sliceAudioElement = new Audio(sliceUrl);
+        this.sliceAudioElement.preload = 'auto';
+      }
+    } catch (e) {
+      // Ignored in non-browser envs
+    }
+
+    if (!this.ctx) {
+      this.init();
+    }
+
+    fetch(sliceUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.arrayBuffer();
+      })
+      .then((arrayBuffer) => {
+        if (this.ctx) {
+          return this.ctx.decodeAudioData(arrayBuffer);
+        }
+        throw new Error('AudioContext not ready');
+      })
+      .then((decoded) => {
+        this.sliceBuffer = decoded;
+        this.isSliceLoading = false;
+      })
+      .catch((err) => {
+        console.warn('slice.mp3 preload/decode note:', err);
+        this.isSliceLoading = false;
+      });
   }
 
   getDistortionCurve(amount = 35) {
@@ -145,30 +200,70 @@ class AudioManager {
     noise.stop(t + 0.125);
   }
 
-  // Realistic organic fruit slicing sound with multi-layer acoustic depth
+  // Slice sound cutting fruit using slice.mp3 (with zero-latency Web Audio API & fallback)
   playSlice(fruitType = 'default') {
     if (!this.isSoundEnabled) return;
     this.resume();
-    if (!this.ctx) return;
 
+    // 1. Play user's slice.mp3 through Web Audio API buffer (Zero latency, full polyphony)
+    if (this.ctx && this.sliceBuffer) {
+      try {
+        const t = this.ctx.currentTime;
+        const source = this.ctx.createBufferSource();
+        source.buffer = this.sliceBuffer;
+
+        // Subtle organic pitch variation (0.95x - 1.05x) so consecutive cuts sound natural
+        const pitch = 0.95 + Math.random() * 0.10;
+        source.playbackRate.setValueAtTime(pitch, t);
+
+        const gainNode = this.ctx.createGain();
+        gainNode.gain.setValueAtTime(1.0, t);
+
+        source.connect(gainNode);
+        gainNode.connect(this.sfxGain);
+
+        source.start(t);
+        return;
+      } catch (e) {
+        console.warn('Error playing sliceBuffer:', e);
+      }
+    }
+
+    // 2. Play using HTMLAudioElement backup if buffer not yet decoded
+    if (this.sliceAudioElement) {
+      try {
+        const soundClone = this.sliceAudioElement.cloneNode();
+        soundClone.volume = this.isSoundEnabled ? 0.95 : 0;
+        soundClone.play().catch(() => {});
+        return;
+      } catch (e) {
+        // Fall through to procedural synthesis
+      }
+    }
+
+    // Trigger loading if not yet loaded
+    if (!this.isSliceLoading) {
+      this.loadSliceAudio();
+    }
+
+    // 3. Fallback procedural synthesis if audio file hasn't finished loading yet
+    if (!this.ctx) return;
     const t = this.ctx.currentTime;
 
-    // 1. Razor blade cut transient (high snappy metallic katana slash)
+    // Razor blade cut transient
     const bladeOsc = this.ctx.createOscillator();
     const bladeGain = this.ctx.createGain();
     bladeOsc.type = 'triangle';
     bladeOsc.frequency.setValueAtTime(2400, t);
     bladeOsc.frequency.exponentialRampToValueAtTime(240, t + 0.055);
-
     bladeGain.gain.setValueAtTime(0.7, t);
     bladeGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-
     bladeOsc.connect(bladeGain);
     bladeGain.connect(this.sfxGain);
     bladeOsc.start(t);
     bladeOsc.stop(t + 0.065);
 
-    // 2. Razor edge friction hiss / air slice (crisp high-pass noise)
+    // Razor edge friction hiss / air slice
     const frictionLen = Math.floor(this.ctx.sampleRate * 0.06);
     const frictionBuf = this.ctx.createBuffer(1, frictionLen, this.ctx.sampleRate);
     const frictionData = frictionBuf.getChannelData(0);
@@ -190,23 +285,21 @@ class AudioManager {
     frictionNoise.start(t);
     frictionNoise.stop(t + 0.065);
 
-    // 3. Meaty flesh cleavage thud (sub-low physical impact)
+    // Meaty flesh cleavage thud
     const thudOsc = this.ctx.createOscillator();
     const thudGain = this.ctx.createGain();
     thudOsc.type = 'sine';
     const startThud = fruitType === 'watermelon' ? 240 : fruitType === 'apple' ? 320 : 280;
     thudOsc.frequency.setValueAtTime(startThud, t);
     thudOsc.frequency.exponentialRampToValueAtTime(60, t + 0.045);
-
     thudGain.gain.setValueAtTime(0.6, t);
     thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-
     thudOsc.connect(thudGain);
     thudGain.connect(this.sfxGain);
     thudOsc.start(t);
     thudOsc.stop(t + 0.055);
 
-    // 4. Juicy organic flesh squish & splatter (resonant wet bandpass)
+    // Juicy organic flesh squish
     const squishDuration = fruitType === 'watermelon' ? 0.16 : fruitType === 'apple' ? 0.09 : 0.12;
     const squishSize = Math.floor(this.ctx.sampleRate * squishDuration);
     const squishBuffer = this.ctx.createBuffer(1, squishSize, this.ctx.sampleRate);
@@ -216,22 +309,18 @@ class AudioManager {
     }
     const squishNoise = this.ctx.createBufferSource();
     squishNoise.buffer = squishBuffer;
-
     const squishFilter = this.ctx.createBiquadFilter();
     squishFilter.type = 'bandpass';
     squishFilter.Q.value = 3.2;
     const cutoff = fruitType === 'watermelon' ? 1100 : fruitType === 'kiwi' ? 1900 : fruitType === 'apple' ? 2400 : 1600;
     squishFilter.frequency.setValueAtTime(cutoff, t);
     squishFilter.frequency.exponentialRampToValueAtTime(260, t + squishDuration * 0.9);
-
     const squishGain = this.ctx.createGain();
     squishGain.gain.setValueAtTime(0.8, t);
     squishGain.gain.exponentialRampToValueAtTime(0.001, t + squishDuration);
-
     squishNoise.connect(squishFilter);
     squishFilter.connect(squishGain);
     squishGain.connect(this.sfxGain);
-
     squishNoise.start(t);
     squishNoise.stop(t + squishDuration + 0.01);
   }
@@ -527,4 +616,5 @@ class AudioManager {
 }
 
 export const audioManager = new AudioManager();
+audioManager.loadSliceAudio();
 export default audioManager;
