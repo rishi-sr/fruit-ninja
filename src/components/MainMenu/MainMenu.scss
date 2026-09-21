@@ -212,60 +212,6 @@
   50% { transform: scale(1.15); opacity: 1; }
 }
 
-// Secondary Mode Selector Strip: CLASSIC, ARCADE, ZEN
-.mode-selector-strip {
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(8, 14, 22, 0.72);
-  border: 1px solid rgba(0, 245, 255, 0.24);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  padding: 4px;
-  border-radius: $radius-full;
-  width: 100%;
-  max-width: 290px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-}
-
-.mode-strip-btn {
-  position: relative;
-  flex: 1;
-  height: 36px;
-  border-radius: $radius-full;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.8px;
-  color: $text-secondary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  .mode-strip-title {
-    position: relative;
-    z-index: 2;
-  }
-
-  &:hover {
-    color: #FFFFFF;
-  }
-
-  &.active {
-    color: #FFFFFF;
-    background: rgba(0, 245, 255, 0.16);
-    border: 1px solid rgba(0, 245, 255, 0.65);
-    box-shadow: 0 0 12px rgba(0, 245, 255, 0.25);
-    font-weight: 800;
-  }
-
-  &:active {
-    transform: scale(0.96);
-  }
-}
-
 // Footer
 .menu-footer {
   display: flex;

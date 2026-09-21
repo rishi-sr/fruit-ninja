@@ -68,7 +68,7 @@ export default function MainMenu({
           <p className="title-tagline">PRECISION • SPEED • CONTROL</p>
         </motion.div>
 
-        {/* Primary START GAME Button + Secondary CLASSIC/ARCADE/ZEN Pills */}
+        {/* Primary START GAME Button */}
         <div className="menu-actions">
           <button
             className="start-game-btn"
@@ -81,27 +81,6 @@ export default function MainMenu({
               <Play size={16} fill="#00F5FF" stroke="none" className="start-play-icon" />
             </div>
           </button>
-
-          {/* Secondary Mode Selector: CLASSIC, ARCADE, ZEN */}
-          <div className="mode-selector-strip">
-            {['CLASSIC', 'ARCADE', 'ZEN'].map((mode) => {
-              const isActive = currentMode === mode;
-              return (
-                <button
-                  key={mode}
-                  className={`mode-strip-btn ${isActive ? 'active' : ''}`}
-                  onClick={() => {
-                    audioManager.playButton();
-                    hapticManager.selection();
-                    onSelectMode(mode);
-                  }}
-                >
-                  <span className="mode-strip-title">{mode}</span>
-                  {isActive && <span className="mode-strip-indicator" />}
-                </button>
-              );
-            })}
-          </div>
         </div>
       </main>
 
