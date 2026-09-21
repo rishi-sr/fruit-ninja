@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
+  <defs>
+    <!-- Dark Wood Background Gradient -->
+    <radialGradient id="favBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#24140B" />
+      <stop offset="100%" stop-color="#0E0804" />
+    </radialGradient>
+
+    <!-- Watermelon Flesh -->
+    <linearGradient id="favFlesh" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF385C" />
+      <stop offset="100%" stop-color="#D90429" />
+    </linearGradient>
+
+    <!-- Rind Green -->
+    <linearGradient id="favRind" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80" />
+      <stop offset="100%" stop-color="#166534" />
+    </linearGradient>
+
+    <!-- Neon Blade Steel -->
+    <linearGradient id="favSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#00F5FF" />
+      <stop offset="100%" stop-color="#1677FF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Wood Tile with Electric Cyan Border -->
+  <rect width="64" height="64" rx="16" fill="url(#favBg)" />
+  <rect width="60" height="60" x="2" y="2" rx="14" fill="none" stroke="#00F5FF" stroke-width="2" stroke-opacity="0.85" />
+
+  <!-- Sliced Watermelon Wedge -->
+  <path d="M 12 36 A 22 22 0 0 0 52 36 Z" fill="url(#favRind)" />
+  <path d="M 14 36 A 20 20 0 0 0 50 36 Z" fill="#F0FDF4" />
+  <path d="M 16 36 A 18 18 0 0 0 48 36 Z" fill="url(#favFlesh)" />
+
+  <!-- Seeds -->
+  <circle cx="25" cy="41" r="1.6" fill="#180702" />
+  <circle cx="32" cy="45" r="1.6" fill="#180702" />
+  <circle cx="39" cy="41" r="1.6" fill="#180702" />
+
+  <!-- Natural Juice Droplets -->
+  <circle cx="21" cy="27" r="1.8" fill="#FF385C" />
+  <circle cx="43" cy="25" r="2" fill="#FF385C" />
+
+  <!-- Diagonal Electric Cyan Blade Trail -->
+  <line x1="56" y1="8" x2="8" y2="56" stroke="#00F5FF" stroke-width="4.5" stroke-linecap="round" opacity="0.6" />
+  <!-- Gleaming Razor Katana Blade -->
+  <line x1="56" y1="8" x2="8" y2="56" stroke="url(#favSteel)" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="55" y1="9" x2="10" y2="54" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" />
+
+  <!-- Central Blade Spark / 4-Point Star Gleam -->
+  <g transform="translate(32, 32)">
+    <circle cx="0" cy="0" r="3.5" fill="#00F5FF" opacity="0.5" />
+    <path d="M 0 -6 Q 0 -1 5 0 Q 0 1 0 6 Q 0 1 -5 0 Q 0 -1 0 -6 Z" fill="#FFFFFF" />
+  </g>
+</svg>
