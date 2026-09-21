@@ -111,6 +111,18 @@ export class FruitPiece {
 
     if (cutImg && cutImg.complete) {
       ctx.drawImage(cutImg, -r, -r, r * 2, r * 2);
+
+      // Delicate ambient neon reflection along edge
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      const rimGrad = ctx.createRadialGradient(0, 0, r * 0.72, 0, 0, r);
+      rimGrad.addColorStop(0, 'transparent');
+      rimGrad.addColorStop(1, 'rgba(0, 245, 255, 0.16)');
+      ctx.fillStyle = rimGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     } else {
       // Fallback
       ctx.fillStyle = this.config.juiceColor;
@@ -233,6 +245,32 @@ export class Fruit {
     const img = assetManager.get(this.type);
     if (img && img.complete) {
       ctx.drawImage(img, -r, -r, r * 2, r * 2);
+
+      // Subtle specular gloss and delicate neon rim lighting conforming to fruit surface
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+
+      // Top-left specular gloss sheen
+      const gloss = ctx.createRadialGradient(-r * 0.32, -r * 0.32, 2, -r * 0.32, -r * 0.32, r * 0.65);
+      gloss.addColorStop(0, 'rgba(255, 255, 255, 0.24)');
+      gloss.addColorStop(0.5, 'rgba(255, 255, 255, 0.06)');
+      gloss.addColorStop(1, 'transparent');
+      ctx.fillStyle = gloss;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Delicate electric cyan ambient rim reflection on outer contour
+      const rimGrad = ctx.createRadialGradient(0, 0, r * 0.72, 0, 0, r);
+      rimGrad.addColorStop(0, 'transparent');
+      rimGrad.addColorStop(0.7, 'rgba(0, 245, 255, 0.04)');
+      rimGrad.addColorStop(1, 'rgba(0, 245, 255, 0.20)');
+      ctx.fillStyle = rimGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
     } else {
       // Fallback
       ctx.fillStyle = this.config.juiceColor;

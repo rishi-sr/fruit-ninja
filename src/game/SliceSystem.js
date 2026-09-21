@@ -71,44 +71,34 @@ export class SliceSystem {
     return segments;
   }
 
-  draw(ctx) {
+  draw(ctx, combo = 0) {
     if (this.points.length < 2) return;
 
     const now = performance.now() / 1000;
     const pts = this.points;
 
+    // Subtle combo evolution scaling (up to +6px blur, +0.15 alpha)
+    const comboBoost = Math.min(6, Math.max(0, (combo - 1) * 0.75));
+    const comboAlpha = Math.min(0.15, Math.max(0, (combo - 1) * 0.02));
+
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // Draw multi-layered glowing tapered blade trail
+    // Layer 1: Outer subtle deep blue bloom
     for (let i = 0; i < pts.length - 1; i++) {
       const p1 = pts[i];
       const p2 = pts[i + 1];
-
-      const age1 = now - p1.time;
-      const progress = 1 - Math.max(0, Math.min(1, age1 / MAX_TRAIL_AGE)); // 0 at tail, 1 at tip
-      const indexRatio = (i + 1) / pts.length; // tapered along length
+      const age = now - p1.time;
+      const progress = 1 - Math.max(0, Math.min(1, age / MAX_TRAIL_AGE));
+      const indexRatio = (i + 1) / pts.length;
       const t = progress * indexRatio;
-
       if (t <= 0.01) continue;
 
-      // Outer golden katana halo
-      ctx.shadowColor = '#FFB800';
-      ctx.shadowBlur = 10 * t;
-      ctx.strokeStyle = `rgba(255, 184, 0, ${0.45 * t})`;
-      ctx.lineWidth = Math.max(1, 7 * t);
-
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-
-      // Sharp white core
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = '#FFFFFF';
-      ctx.strokeStyle = `rgba(255, 255, 255, ${0.95 * t})`;
-      ctx.lineWidth = Math.max(1, 3 * t);
+      ctx.shadowColor = '#1677FF';
+      ctx.shadowBlur = (14 + comboBoost) * t;
+      ctx.strokeStyle = `rgba(22, 119, 255, ${(0.3 + comboAlpha) * t})`;
+      ctx.lineWidth = Math.max(1.5, 6 * t);
 
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
@@ -116,14 +106,63 @@ export class SliceSystem {
       ctx.stroke();
     }
 
-    // Glistening tip point
+    // Layer 2: Electric cyan outer glow
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const age = now - p1.time;
+      const progress = 1 - Math.max(0, Math.min(1, age / MAX_TRAIL_AGE));
+      const indexRatio = (i + 1) / pts.length;
+      const t = progress * indexRatio;
+      if (t <= 0.01) continue;
+
+      ctx.shadowColor = '#00F5FF';
+      ctx.shadowBlur = (8 + comboBoost) * t;
+      ctx.strokeStyle = `rgba(0, 245, 255, ${(0.8 + comboAlpha) * t})`;
+      ctx.lineWidth = Math.max(1.2, 3.8 * t);
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    // Layer 3: Thin bright razor-sharp white core
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const age = now - p1.time;
+      const progress = 1 - Math.max(0, Math.min(1, age / MAX_TRAIL_AGE));
+      const indexRatio = (i + 1) / pts.length;
+      const t = progress * indexRatio;
+      if (t <= 0.01) continue;
+
+      ctx.shadowBlur = 3;
+      ctx.shadowColor = '#FFFFFF';
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.98 * t})`;
+      ctx.lineWidth = Math.max(0.8, 2.2 * t);
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    // Glistening tip point: cyan aura + crisp white spark
     if (this.points.length > 0) {
       const head = pts[pts.length - 1];
-      ctx.shadowColor = '#FFB800';
-      ctx.shadowBlur = 14;
+      ctx.shadowColor = '#00F5FF';
+      ctx.shadowBlur = 12 + comboBoost;
+      ctx.fillStyle = 'rgba(0, 245, 255, 0.7)';
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowColor = '#FFFFFF';
+      ctx.shadowBlur = 4;
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(head.x, head.y, 3, 0, Math.PI * 2);
+      ctx.arc(head.x, head.y, 2.2, 0, Math.PI * 2);
       ctx.fill();
     }
 

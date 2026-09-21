@@ -10,8 +10,8 @@ export default function GameOver({ stats, onPlayAgain, onMainMenu }) {
 
   const { score, bestScore, maxCombo, fruitsSliced, isNewBest, mode } = stats;
 
-  const formattedScore = score.toLocaleString();
-  const formattedBest = bestScore.toLocaleString();
+  const formattedScore = score.toLocaleString('en-US', { minimumIntegerDigits: 5 });
+  const formattedBest = bestScore.toLocaleString('en-US', { minimumIntegerDigits: 5 });
 
   const handlePlayAgain = () => {
     audioManager.playButton();

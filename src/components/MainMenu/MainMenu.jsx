@@ -68,21 +68,39 @@ export default function MainMenu({
           <p className="title-tagline">PRECISION • SPEED • CONTROL</p>
         </motion.div>
 
-        {/* Static Play Game Button */}
+        {/* Primary START GAME Button + Secondary CLASSIC/ARCADE/ZEN Pills */}
         <div className="menu-actions">
-          <div className="slice-guide-container">
-            <button
-              className="slice-guide-badge static"
-              onClick={handleStart}
-              aria-label="Play Game"
-            >
-              <div className="guide-content">
-                <div className="guide-icon-pulse">
-                  <Play size={18} fill="currentColor" />
-                </div>
-                <span className="guide-main-text">PLAY GAME</span>
-              </div>
-            </button>
+          <button
+            className="start-game-btn"
+            onClick={handleStart}
+            aria-label="Start Game"
+          >
+            <div className="btn-content">
+              <span className="neon-pulse-dot" />
+              <span className="start-btn-text">START GAME</span>
+              <Play size={16} fill="#00F5FF" stroke="none" className="start-play-icon" />
+            </div>
+          </button>
+
+          {/* Secondary Mode Selector: CLASSIC, ARCADE, ZEN */}
+          <div className="mode-selector-strip">
+            {['CLASSIC', 'ARCADE', 'ZEN'].map((mode) => {
+              const isActive = currentMode === mode;
+              return (
+                <button
+                  key={mode}
+                  className={`mode-strip-btn ${isActive ? 'active' : ''}`}
+                  onClick={() => {
+                    audioManager.playButton();
+                    hapticManager.selection();
+                    onSelectMode(mode);
+                  }}
+                >
+                  <span className="mode-strip-title">{mode}</span>
+                  {isActive && <span className="mode-strip-indicator" />}
+                </button>
+              );
+            })}
           </div>
         </div>
       </main>

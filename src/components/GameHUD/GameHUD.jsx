@@ -26,35 +26,34 @@ export default function GameHUD({
 
   return (
     <div className="game-hud-container">
-      {/* Top Left: Score */}
-      <div className="hud-left">
+      {/* Top Left: SCORE 02480 in Glass Pod */}
+      <div className="hud-glass-pod hud-left">
         <span className="hud-label">SCORE</span>
         <span className="hud-score-value">{formattedScore}</span>
       </div>
 
-      {/* Top Center: Combo or subtle mode notice */}
+      {/* Top Center: 5x COMBO in Glass Pod with Cyan Glow */}
       <div className="hud-center">
         <AnimatePresence>
           {combo >= 2 && (
             <motion.div
               key={combo}
-              className="combo-badge"
+              className="hud-glass-pod combo-badge"
               initial={{ scale: 0.6, opacity: 0, y: -6 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 600, damping: 25 }}
             >
-              <span className="combo-x">x</span>
-              <span className="combo-number">{combo}</span>
+              <span className="combo-text">{combo}x COMBO</span>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Top Right: Lives (Classic), Timer (Arcade/Zen), and Pause Button */}
+      {/* Top Right: 3 LIFE ICONS (Classic), Timer (Arcade/Zen), and Pause Button */}
       <div className="hud-right">
         {mode === GAME_MODES.CLASSIC && (
-          <div className="lives-display">
+          <div className="hud-glass-pod lives-display">
             {[1, 2, 3].map((heartIndex) => {
               const hasLife = heartIndex <= lives;
               return (
@@ -63,10 +62,10 @@ export default function GameHUD({
                   className={`heart-slot ${hasLife ? 'active' : 'lost'}`}
                 >
                   <Heart
-                    size={18}
+                    size={16}
                     className="heart-icon"
                     fill={hasLife ? '#FF3B30' : 'none'}
-                    stroke={hasLife ? '#FF3B30' : '#4A5568'}
+                    stroke={hasLife ? '#FF3B30' : 'rgba(255, 255, 255, 0.2)'}
                   />
                 </div>
               );
@@ -75,7 +74,7 @@ export default function GameHUD({
         )}
 
         {(mode === GAME_MODES.ARCADE || mode === GAME_MODES.ZEN) && (
-          <div className="timer-display">
+          <div className="hud-glass-pod timer-display">
             <span className="timer-label">{mode === GAME_MODES.ZEN ? 'TIME' : 'CLOCK'}</span>
             <span className={`timer-digits ${timeLeft <= 10 ? 'urgent' : ''}`}>
               {formattedTime}
@@ -83,7 +82,7 @@ export default function GameHUD({
           </div>
         )}
 
-        {/* Minimalist thumb-friendly pause button */}
+        {/* Minimal thumb-friendly pause button */}
         <button
           className="hud-pause-btn"
           onClick={() => {
@@ -92,7 +91,7 @@ export default function GameHUD({
           }}
           aria-label="Pause game"
         >
-          <Pause size={18} />
+          <Pause size={17} />
         </button>
       </div>
     </div>

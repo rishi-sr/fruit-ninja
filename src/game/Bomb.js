@@ -85,23 +85,39 @@ export class Bomb {
     const img = assetManager.get('bomb');
     if (img && img.complete) {
       ctx.drawImage(img, -r, -r, r * 2, r * 2);
+
+      // Subtle metallic brushed gunmetal specular sheen
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      const sheen = ctx.createLinearGradient(-r, -r, r, r);
+      sheen.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+      sheen.addColorStop(0.3, 'rgba(255, 255, 255, 0.04)');
+      sheen.addColorStop(0.5, 'transparent');
+      sheen.addColorStop(1, 'rgba(0, 0, 0, 0.35)');
+      ctx.fillStyle = sheen;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     } else {
       // Dark metallic sphere fallback
-      const grad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, 2, 0, 0, r);
-      grad.addColorStop(0, '#4A5568');
-      grad.addColorStop(0.7, '#1A202C');
-      grad.addColorStop(1, '#0A0D12');
+      const grad = ctx.createRadialGradient(-r * 0.35, -r * 0.35, 2, 0, 0, r);
+      grad.addColorStop(0, '#5A6472');
+      grad.addColorStop(0.5, '#222831');
+      grad.addColorStop(1, '#0E1117');
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(0, 0, r, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Red warning pulse overlay
+    // Danger warning pulse core
     const pulse = 0.5 + 0.5 * Math.sin(this.age * 9);
-    ctx.fillStyle = `rgba(255, 59, 48, ${0.35 * pulse})`;
+    ctx.shadowColor = '#FF3B30';
+    ctx.shadowBlur = 10 * pulse;
+    ctx.fillStyle = `rgba(255, 59, 48, ${0.45 * pulse})`;
     ctx.beginPath();
-    ctx.arc(0, 0, r * 0.3, 0, Math.PI * 2);
+    ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();

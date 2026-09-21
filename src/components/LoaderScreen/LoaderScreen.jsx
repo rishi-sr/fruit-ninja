@@ -42,7 +42,13 @@ export default function LoaderScreen({ progress = 0 }) {
           <div className="crest-ring-outer" />
           <div className="crest-ring-inner" />
           <div className="crest-core">
-            <span className="crest-fruit-emoji">🍉</span>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00F5FF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="crest-blade-svg">
+              <path d="m3 21 8.5-8.5" />
+              <path d="m14.5 9.5 2 2" />
+              <path d="m11.5 12.5 2 2" />
+              <path d="m13 8 6-6 2 2-6 6" />
+              <path d="m8.5 15.5-2.5 2.5a2 2 0 0 1-2.83 0v0a2 2 0 0 1 0-2.83l2.5-2.5" />
+            </svg>
           </div>
           <div className="crest-blade-slash" />
         </div>

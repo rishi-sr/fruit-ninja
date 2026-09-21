@@ -5,15 +5,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 18, 23, 0.7);
+  background: rgba(10, 16, 26, 0.72);
   padding: 4px;
   border-radius: $radius-full;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 245, 255, 0.28);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 .mode-pill-btn {
@@ -25,25 +26,26 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.8px;
-  color: $color-text-secondary;
+  color: $text-secondary;
   z-index: 1;
   transition: color 0.2s ease;
 
   &.selected {
-    color: #050608;
+    color: #FFFFFF;
     font-weight: 800;
   }
 
   &:not(.selected):hover {
-    color: $color-text-primary;
+    color: #FFFFFF;
   }
 
   .mode-pill-active-bg {
     position: absolute;
     inset: 0;
     border-radius: $radius-full;
-    background: $color-accent;
-    box-shadow: 0 0 14px $color-accent-glow;
+    background: rgba(0, 245, 255, 0.2);
+    border: 1px solid rgba(0, 245, 255, 0.7);
+    box-shadow: 0 0 14px rgba(0, 245, 255, 0.35);
     z-index: -1;
   }
 
@@ -52,4 +54,3 @@
     z-index: 2;
   }
 }
-

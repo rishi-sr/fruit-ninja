@@ -149,13 +149,13 @@ class MenuFruit {
       const ringRadius = r * 1.35;
       const t = performance.now() / 1000;
 
-      // Outer pulsing celestial ring
+      // Outer pulsing celestial electric cyan ring
       ctx.save();
       ctx.rotate(t * 0.8);
-      ctx.strokeStyle = 'rgba(255, 184, 0, 0.55)';
-      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = 'rgba(0, 245, 255, 0.55)';
+      ctx.lineWidth = 2.2;
       ctx.setLineDash([14, 8, 4, 8]);
-      ctx.shadowColor = '#FFB800';
+      ctx.shadowColor = '#00F5FF';
       ctx.shadowBlur = 14;
       ctx.beginPath();
       ctx.arc(0, 0, ringRadius, 0, Math.PI * 2);
@@ -165,7 +165,7 @@ class MenuFruit {
       // Inner counter-rotating indicator ring
       ctx.save();
       ctx.rotate(-t * 1.2);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([8, 12]);
       ctx.beginPath();
@@ -179,18 +179,33 @@ class MenuFruit {
     const img = assetManager.get(this.type);
     if (img && img.complete) {
       ctx.drawImage(img, -r, -r, r * 2, r * 2);
+
+      // Subtle gloss sheen & delicate cyan rim reflection
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      const gloss = ctx.createRadialGradient(-r * 0.32, -r * 0.32, 2, -r * 0.32, -r * 0.32, r * 0.65);
+      gloss.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
+      gloss.addColorStop(0.5, 'rgba(255, 255, 255, 0.06)');
+      gloss.addColorStop(1, 'transparent');
+      ctx.fillStyle = gloss;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      const rimGrad = ctx.createRadialGradient(0, 0, r * 0.72, 0, 0, r);
+      rimGrad.addColorStop(0, 'transparent');
+      rimGrad.addColorStop(1, 'rgba(0, 245, 255, 0.20)');
+      ctx.fillStyle = rimGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     } else {
       ctx.fillStyle = this.config.juiceColor;
       ctx.beginPath();
       ctx.arc(0, 0, r, 0, Math.PI * 2);
       ctx.fill();
     }
-
-    // 4. Highlight sheen
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-    ctx.beginPath();
-    ctx.ellipse(-r * 0.25, -r * 0.25, r * 0.35, r * 0.18, -Math.PI / 4, 0, Math.PI * 2);
-    ctx.fill();
 
     ctx.restore();
   }
@@ -236,16 +251,17 @@ export default function MenuCanvas({ onStartGame, isStarting }) {
       new MenuFruit('kiwi', 0.82, 0.34, 34, false)
     ];
 
-    // Ambient floating dust particles
+    // Ambient floating neon dust particles
     const ambientDust = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 22; i++) {
       ambientDust.push({
         x: Math.random() * width,
         y: Math.random() * height,
         radius: Math.random() * 2 + 0.8,
         speedX: (Math.random() - 0.5) * 12,
         speedY: -Math.random() * 15 - 6,
-        alpha: Math.random() * 0.3 + 0.1
+        alpha: Math.random() * 0.3 + 0.1,
+        color: i % 3 === 0 ? '#00F5FF' : (i % 3 === 1 ? '#7C3AED' : '#FFFFFF')
       });
     }
 
@@ -380,23 +396,62 @@ export default function MenuCanvas({ onStartGame, isStarting }) {
 
         // Dark cinematic vignette
         const overlay = ctx.createLinearGradient(0, 0, 0, height);
-        overlay.addColorStop(0, 'rgba(5, 6, 8, 0.45)');
-        overlay.addColorStop(0.5, 'rgba(5, 6, 8, 0.2)');
-        overlay.addColorStop(1, 'rgba(5, 6, 8, 0.65)');
+        overlay.addColorStop(0, 'rgba(5, 6, 8, 0.35)');
+        overlay.addColorStop(0.5, 'rgba(5, 6, 8, 0.12)');
+        overlay.addColorStop(1, 'rgba(5, 6, 8, 0.52)');
         ctx.fillStyle = overlay;
         ctx.fillRect(0, 0, width, height);
       } else {
-        ctx.fillStyle = '#080B10';
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+        bgGrad.addColorStop(0, '#24140B');
+        bgGrad.addColorStop(0.5, '#1A0E07');
+        bgGrad.addColorStop(1, '#0F0905');
+        ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, width, height);
       }
+
+      // Dynamic Ambient Neon Lighting Layer over the Wood Board
+      const t = performance.now() / 1000;
+      const breathe = 0.9 + 0.1 * Math.sin(t * 1.2);
+
+      // Top-left soft Electric Cyan glow
+      const cyanGlow = ctx.createRadialGradient(0, 0, 10, 0, 0, width * 0.72 * breathe);
+      cyanGlow.addColorStop(0, 'rgba(0, 245, 255, 0.16)');
+      cyanGlow.addColorStop(0.5, 'rgba(0, 245, 255, 0.04)');
+      cyanGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = cyanGlow;
+      ctx.fillRect(0, 0, width, height);
+
+      // Bottom-right subtle Violet reflection
+      const violetGlow = ctx.createRadialGradient(width, height, 10, width, height, width * 0.68 * breathe);
+      violetGlow.addColorStop(0, 'rgba(124, 58, 237, 0.14)');
+      violetGlow.addColorStop(0.5, 'rgba(124, 58, 237, 0.03)');
+      violetGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = violetGlow;
+      ctx.fillRect(0, 0, width, height);
+
+      // Deep blue perimeter shading / soft ambient shadows
+      const blueShadow = ctx.createRadialGradient(
+        width * 0.5,
+        height * 0.5,
+        width * 0.35,
+        width * 0.5,
+        height * 0.5,
+        width * 0.85
+      );
+      blueShadow.addColorStop(0, 'transparent');
+      blueShadow.addColorStop(0.7, 'rgba(22, 119, 255, 0.05)');
+      blueShadow.addColorStop(1, 'rgba(10, 16, 26, 0.42)');
+      ctx.fillStyle = blueShadow;
+      ctx.fillRect(0, 0, width, height);
 
       // 2. Wall Juice Splatters on Wood Background
       splashSystem.draw(ctx);
 
-      // 3. Ambient dust motes
-      ctx.fillStyle = '#FFFFFF';
+      // 3. Ambient luminescent dust motes
       for (let i = 0; i < ambientDust.length; i++) {
         const p = ambientDust[i];
+        ctx.fillStyle = p.color || '#FFFFFF';
         ctx.globalAlpha = p.alpha;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);

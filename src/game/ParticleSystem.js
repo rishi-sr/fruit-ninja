@@ -115,26 +115,34 @@ class FloatingText {
     this.maxLife = 0.8;
     this.scale = 1;
     this.isCombo = false;
+    this.isPerfect = false;
+    this.comboLevel = 1;
   }
 
-  reset(x, y, text, color = '#FFFFFF', isCombo = false) {
+  reset(x, y, text, color = '#FFFFFF', isCombo = false, isPerfect = false, comboLevel = 1) {
     this.active = true;
     this.x = x;
     this.y = y;
     this.text = text;
     this.color = color;
-    this.maxLife = isCombo ? 1.0 : 0.7;
+    this.isCombo = isCombo;
+    this.isPerfect = isPerfect;
+    this.comboLevel = comboLevel;
+    this.maxLife = isCombo ? 0.95 : (isPerfect ? 0.85 : 0.7);
     this.life = this.maxLife;
     this.alpha = 1;
-    this.scale = isCombo ? 1.3 : 1.0;
-    this.isCombo = isCombo;
+    this.scale = isCombo ? 1.2 : (isPerfect ? 1.15 : 1.0);
   }
 
   update(dt) {
     if (!this.active) return;
-    this.y -= 45 * dt;
+    this.y -= (this.isPerfect ? 32 : 44) * dt;
     this.life -= dt;
     this.alpha = Math.max(0, this.life / this.maxLife);
+    if (this.isPerfect && this.life > this.maxLife * 0.7) {
+      // Gentle scale up on entrance
+      this.scale = Math.min(1.25, this.scale + dt * 0.8);
+    }
     if (this.life <= 0) {
       this.active = false;
     }
@@ -147,18 +155,31 @@ class FloatingText {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    if (this.isCombo) {
-      ctx.font = '800 24px "Outfit", sans-serif';
-      ctx.shadowColor = '#FFB800';
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = '#FFB800';
+    if (this.isPerfect) {
+      // Elegant, modern glowing PERFECT text
+      ctx.font = '800 16px "Space Grotesk", sans-serif';
+      ctx.shadowColor = '#00F5FF';
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText('PERFECT', this.x, this.y);
+      ctx.shadowBlur = 4;
+      ctx.strokeStyle = 'rgba(0, 245, 255, 0.75)';
+      ctx.lineWidth = 1;
+      ctx.strokeText('PERFECT', this.x, this.y);
+    } else if (this.isCombo) {
+      // Escalating cyan neon combo text
+      const glowBlur = Math.min(22, 10 + this.comboLevel * 1.5);
+      ctx.font = '800 22px "Outfit", sans-serif';
+      ctx.shadowColor = '#00F5FF';
+      ctx.shadowBlur = glowBlur;
+      ctx.fillStyle = '#FFFFFF';
       ctx.fillText(this.text, this.x, this.y);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#00F5FF';
       ctx.strokeText(this.text, this.x, this.y);
     } else {
-      ctx.font = '700 18px "Space Grotesk", sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.font = '700 17px "Space Grotesk", sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.7)';
       ctx.shadowBlur = 4;
       ctx.fillStyle = this.color;
       ctx.fillText(this.text, this.x, this.y);
@@ -232,6 +253,64 @@ export class ParticleSystem {
         'pulp'
       );
     }
+
+    // Small electric cyan & deep blue neon contact sparks
+    const sparkCount = Math.floor(Math.random() * 3) + 4;
+    for (let i = 0; i < sparkCount; i++) {
+      const p = this.particles.find(pt => !pt.active);
+      if (!p) break;
+      const angle = cutAngle + (Math.random() - 0.5) * 2.5 + (Math.random() < 0.5 ? 0 : Math.PI);
+      const speed = Math.random() * 240 + 100;
+      const color = Math.random() < 0.75 ? '#00F5FF' : '#1677FF';
+      p.reset(
+        x,
+        y,
+        Math.cos(angle) * speed,
+        Math.sin(angle) * speed - 20,
+        Math.random() * 2.2 + 1.2,
+        color,
+        Math.random() * 0.35 + 0.2,
+        420,
+        'spark'
+      );
+    }
+  }
+
+  // Spawn elegant perfect slice: white flash + cyan glow ring + small particle burst + floating text
+  spawnPerfectSlice(x, y) {
+    if (!this.isEnabled) return;
+
+    // Cyan shockwave ring
+    const ring = this.particles.find(pt => !pt.active);
+    if (ring) {
+      ring.reset(x, y, 0, 0, 50, '#00F5FF', 0.32, 0, 'ring');
+    }
+
+    // Small burst of white and cyan spark particles
+    for (let i = 0; i < 10; i++) {
+      const p = this.particles.find(pt => !pt.active);
+      if (!p) break;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 210 + 70;
+      const color = i % 2 === 0 ? '#FFFFFF' : '#00F5FF';
+      p.reset(
+        x,
+        y,
+        Math.cos(angle) * speed,
+        Math.sin(angle) * speed,
+        Math.random() * 2.5 + 1.2,
+        color,
+        Math.random() * 0.38 + 0.22,
+        360,
+        'spark'
+      );
+    }
+
+    // Elegant glowing "PERFECT" text
+    const textItem = this.floatingTexts.find(t => !t.active);
+    if (textItem) {
+      textItem.reset(x, y - 8, 'PERFECT', '#FFFFFF', false, true, 1);
+    }
   }
 
   // Spawn bomb fuse embers
@@ -292,10 +371,10 @@ export class ParticleSystem {
   }
 
   // Spawn floating score / combo text feedback
-  spawnText(x, y, text, color = '#FFFFFF', isCombo = false) {
+  spawnText(x, y, text, color = '#FFFFFF', isCombo = false, comboLevel = 1) {
     const item = this.floatingTexts.find(t => !t.active);
     if (item) {
-      item.reset(x, y, text, color, isCombo);
+      item.reset(x, y, text, color, isCombo, false, comboLevel);
     }
   }
 

@@ -62,6 +62,7 @@ export class GameEngine {
     this.screenShake = 0;
     this.screenFlash = 0; // 0 to 1
     this.screenFlashColor = 'rgba(255, 59, 48, 0.4)';
+    this.bombPulse = 0; // 0 to 1: temporary red ambient wash overriding cyan upon bomb detonation
     this.settings = {
       sound: true,
       music: true,
@@ -77,7 +78,7 @@ export class GameEngine {
     // Bound loop
     this.loop = this.loop.bind(this);
 
-    // Initialize atmospheric floating background dust
+    // Initialize atmospheric floating background neon dust motes
     this.initAmbientParticles();
   }
 
@@ -90,7 +91,8 @@ export class GameEngine {
         radius: Math.random() * 2 + 0.8,
         speedX: (Math.random() - 0.5) * 12,
         speedY: -Math.random() * 18 - 8,
-        alpha: Math.random() * 0.25 + 0.08
+        alpha: Math.random() * 0.28 + 0.08,
+        color: i % 3 === 0 ? '#00F5FF' : (i % 3 === 1 ? '#7C3AED' : '#FFFFFF')
       });
     }
   }
@@ -465,6 +467,17 @@ export class GameEngine {
         }
       }
 
+      // Perfect Slice check for clean centered hit
+      if (slicedFruits.length === 1) {
+        const { fruit, cutPoint } = slicedFruits[0];
+        const distFromCenter = Math.hypot(cutPoint.x - fruit.x, cutPoint.y - fruit.y);
+        if (distFromCenter < fruit.radius * 0.22) {
+          this.particleSystem.spawnPerfectSlice(cutPoint.x, cutPoint.y);
+          this.triggerFlash('rgba(0, 245, 255, 0.22)');
+          waveSlicePoints += 5;
+        }
+      }
+
       // Sound & Haptics based on combo level
       if (this.combo >= 2) {
         audioManager.playCombo(this.combo);
@@ -474,8 +487,9 @@ export class GameEngine {
           center.x,
           center.y - 20,
           `${this.combo} COMBO +${waveSlicePoints}`,
-          '#FFB800',
-          true
+          '#00F5FF',
+          true,
+          this.combo
         );
       } else {
         hapticManager.light();
@@ -501,7 +515,8 @@ export class GameEngine {
         audioManager.playBomb();
         hapticManager.heavy();
         this.triggerScreenShake(1.2);
-        this.triggerFlash('rgba(255, 59, 48, 0.6)');
+        this.triggerFlash('rgba(255, 59, 48, 0.65)');
+        this.bombPulse = 1.0; // Override cyan ambient lighting with red pulse
 
         // Combo reset
         this.combo = 0;
@@ -551,6 +566,11 @@ export class GameEngine {
       }
       if (p.x < -10) p.x = this.width + 10;
       if (p.x > this.width + 10) p.x = -10;
+    }
+
+    // Decay bomb pulse smoothly over ~1.2s back to ambient cyan theme
+    if (this.bombPulse > 0) {
+      this.bombPulse = Math.max(0, this.bombPulse - dt * 0.85);
     }
   }
 
@@ -667,40 +687,79 @@ export class GameEngine {
 
       // Subtle cinematic dark vignette overlay for high contrast
       const overlay = ctx.createLinearGradient(0, 0, 0, this.height);
-      overlay.addColorStop(0, 'rgba(5, 6, 8, 0.4)');
-      overlay.addColorStop(0.5, 'rgba(5, 6, 8, 0.15)');
-      overlay.addColorStop(1, 'rgba(5, 6, 8, 0.55)');
+      overlay.addColorStop(0, 'rgba(5, 6, 8, 0.35)');
+      overlay.addColorStop(0.5, 'rgba(5, 6, 8, 0.12)');
+      overlay.addColorStop(1, 'rgba(5, 6, 8, 0.50)');
       ctx.fillStyle = overlay;
       ctx.fillRect(0, 0, this.width, this.height);
     } else {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, this.height);
-      bgGrad.addColorStop(0, '#050608');
-      bgGrad.addColorStop(0.5, '#080B10');
-      bgGrad.addColorStop(1, '#0D1117');
+      bgGrad.addColorStop(0, '#24140B');
+      bgGrad.addColorStop(0.5, '#1A0E07');
+      bgGrad.addColorStop(1, '#0F0905');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(-20, -20, this.width + 40, this.height + 40);
+    }
 
-      const vignette = ctx.createRadialGradient(
+    // 1.2. Dynamic Ambient Neon Lighting Layer over the Wood Board
+    const t = this.gameTime;
+    const breathe = 0.9 + 0.1 * Math.sin(t * 1.2);
+
+    // Top-left soft Electric Cyan glow
+    const cyanGlow = ctx.createRadialGradient(0, 0, 10, 0, 0, this.width * 0.72 * breathe);
+    cyanGlow.addColorStop(0, 'rgba(0, 245, 255, 0.16)');
+    cyanGlow.addColorStop(0.5, 'rgba(0, 245, 255, 0.04)');
+    cyanGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = cyanGlow;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // Bottom-right subtle Violet reflection
+    const violetGlow = ctx.createRadialGradient(this.width, this.height, 10, this.width, this.height, this.width * 0.68 * breathe);
+    violetGlow.addColorStop(0, 'rgba(124, 58, 237, 0.14)');
+    violetGlow.addColorStop(0.5, 'rgba(124, 58, 237, 0.03)');
+    violetGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = violetGlow;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // Deep blue perimeter shading / soft ambient shadows
+    const blueShadow = ctx.createRadialGradient(
+      this.width * 0.5,
+      this.height * 0.5,
+      this.width * 0.35,
+      this.width * 0.5,
+      this.height * 0.5,
+      this.width * 0.85
+    );
+    blueShadow.addColorStop(0, 'transparent');
+    blueShadow.addColorStop(0.7, 'rgba(22, 119, 255, 0.05)');
+    blueShadow.addColorStop(1, 'rgba(10, 16, 26, 0.42)');
+    ctx.fillStyle = blueShadow;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // Bomb Red Pulse Override: Temporarily overrides cyan lighting upon detonation
+    if (this.bombPulse > 0) {
+      const redPulse = ctx.createRadialGradient(
         this.width * 0.5,
-        this.height * 0.45,
-        10,
+        this.height * 0.5,
+        20,
         this.width * 0.5,
-        this.height * 0.45,
-        this.width * 0.85
+        this.height * 0.5,
+        this.width * 0.95
       );
-      vignette.addColorStop(0, 'rgba(20, 27, 38, 0.15)');
-      vignette.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
-      ctx.fillStyle = vignette;
+      redPulse.addColorStop(0, `rgba(255, 59, 48, ${0.45 * this.bombPulse})`);
+      redPulse.addColorStop(0.7, `rgba(255, 98, 0, ${0.28 * this.bombPulse})`);
+      redPulse.addColorStop(1, `rgba(255, 59, 48, ${0.52 * this.bombPulse})`);
+      ctx.fillStyle = redPulse;
       ctx.fillRect(0, 0, this.width, this.height);
     }
 
     // 1.5. Draw Fruit Juice Splatters on Wood Background
     this.splashSystem.draw(ctx);
 
-    // 2. Ambient dust particles
-    ctx.fillStyle = '#FFFFFF';
+    // 2. Ambient neon-lit dust particles
     for (let i = 0; i < this.ambientParticles.length; i++) {
       const p = this.ambientParticles[i];
+      ctx.fillStyle = p.color || '#FFFFFF';
       ctx.globalAlpha = p.alpha;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -721,8 +780,8 @@ export class GameEngine {
     // 5. Draw Particles (juice drops, pulp, embers, shockwaves, floating text)
     this.particleSystem.draw(ctx);
 
-    // 6. Draw Tapered Blade Trail
-    this.sliceSystem.draw(ctx);
+    // 6. Draw Tapered Blade Trail with Combo Escalation
+    this.sliceSystem.draw(ctx, this.combo);
 
     // 7. Screen flash overlay
     if (this.screenFlash > 0) {

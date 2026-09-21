@@ -1,18 +1,36 @@
-// BLADE Design System Tokens
-$color-bg-base: #0A0705;
-$color-bg-surface: #140D09;
-$color-bg-elevated: #1E140D;
-$color-bg-sheet: rgba(24, 16, 11, 0.95);
-$color-bg-glass: rgba(28, 19, 13, 0.72);
+// Wood Tones
+$wood-dark: #24140B;
+$wood: #6B3518;
+$wood-light: #A85C2A;
 
-$color-text-primary: #FFFFFF;
-$color-text-secondary: #D4C4B5;
-$color-text-muted: #8C7C6F;
+// Neon Lighting Layer
+$neon-cyan: #00F5FF;
+$neon-blue: #1677FF;
+$neon-violet: #7C3AED;
+$neon-magenta: #FF2BD6;
 
-$color-accent: #FFB800;       // Warm golden amber arcade accent
-$color-accent-glow: rgba(255, 184, 0, 0.38);
-$color-danger: #FF3B30;       // Apple crimson danger
-$color-danger-glow: rgba(255, 59, 48, 0.4);
+// Typography & Status
+$text-primary: #FFFFFF;
+$text-secondary: #A7ADB7;
+$danger: #FF3B30;
+
+// Theme Surface & Glass Tokens
+$color-bg-base: #0B0806;
+$color-bg-surface: rgba(20, 14, 10, 0.85);
+$color-bg-elevated: rgba(28, 18, 12, 0.9);
+$color-bg-sheet: rgba(14, 18, 26, 0.94);
+$color-bg-glass: rgba(10, 16, 26, 0.72);
+
+// Standard Aliases
+$color-text-primary: $text-primary;
+$color-text-secondary: $text-secondary;
+$color-text-muted: #6B7280;
+
+$color-accent: $neon-cyan;
+$color-accent-glow: rgba(0, 245, 255, 0.38);
+$color-accent-secondary: $neon-blue;
+$color-danger: $danger;
+$color-danger-glow: rgba(255, 59, 48, 0.45);
 $color-gold: #FFD60A;
 
 $font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
