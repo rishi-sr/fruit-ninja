@@ -324,13 +324,6 @@ export class GameEngine {
     // Progression tier upgrade check (e.g. on passing 300, 600, 900, 1200, 1500)
     if (tiers > this.lastProgressionTier) {
       this.lastProgressionTier = tiers;
-      this.particleSystem.spawnText(
-        this.width * 0.5,
-        this.height * 0.32,
-        `SPEED ${speedPercent}% • FRUITS ${fruitPercent}%`,
-        '#FFB800',
-        true
-      );
       audioManager.playLevelUp();
       hapticManager.medium();
       this.triggerFlash('rgba(255, 184, 0, 0.25)');
@@ -342,14 +335,6 @@ export class GameEngine {
       audioManager.playLevelUp();
       hapticManager.heavy();
       this.triggerFlash('rgba(255, 59, 48, 0.35)');
-      const maxNotice = bombIncrease >= 0.06 ? ' (MAX)' : '';
-      this.particleSystem.spawnText(
-        this.width * 0.5,
-        this.height * 0.38,
-        `⚠️ BOMBS +${bombIncreasePercent}%${maxNotice}`,
-        '#FF453A',
-        true
-      );
     }
 
     // Mode timer for Arcade / Zen
@@ -458,13 +443,6 @@ export class GameEngine {
         audioManager.playLevelUp();
         hapticManager.medium();
         this.triggerFlash('rgba(255, 184, 0, 0.3)');
-        this.particleSystem.spawnText(
-          this.width * 0.5,
-          this.height * 0.32,
-          `SPEED ${progression.speedPercent}% • FRUITS ${progression.fruitPercent}%`,
-          '#FFB800',
-          true
-        );
       }
 
       // Check for immediate bomb tier upgrade upon scoring (after 500 pts: +3%, at 1000 pts: +6% max)
@@ -473,14 +451,6 @@ export class GameEngine {
         audioManager.playLevelUp();
         hapticManager.heavy();
         this.triggerFlash('rgba(255, 59, 48, 0.35)');
-        const maxNotice = progression.bombIncrease >= 0.06 ? ' (MAX)' : '';
-        this.particleSystem.spawnText(
-          this.width * 0.5,
-          this.height * 0.38,
-          `⚠️ BOMBS +${progression.bombIncreasePercent}%${maxNotice}`,
-          '#FF453A',
-          true
-        );
       }
 
       // Always play visceral slice sound for each sliced fruit

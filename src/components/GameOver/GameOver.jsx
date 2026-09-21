@@ -35,7 +35,7 @@ export default function GameOver({ stats, onPlayAgain, onMainMenu }) {
       >
         {/* Mode Tag */}
         <div className="game-over-header">
-          <span className="mode-badge">{mode} SESSION TERMINATED</span>
+          <span className="mode-badge">{mode} MODE</span>
           <h2 className="game-over-title">GAME OVER</h2>
         </div>
 
@@ -51,7 +51,7 @@ export default function GameOver({ stats, onPlayAgain, onMainMenu }) {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                NEW BEST
+                ★ NEW BEST
               </motion.span>
             )}
           </div>

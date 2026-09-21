@@ -26,36 +26,10 @@ export default function GameHUD({
 
   return (
     <div className="game-hud-container">
-      {/* Top Left: Score & Badges */}
+      {/* Top Left: Score */}
       <div className="hud-left">
         <span className="hud-label">SCORE</span>
         <span className="hud-score-value">{formattedScore}</span>
-        <div className="hud-badges-row">
-          {speedPercent > 100 && (
-            <motion.div
-              key={`spd-${speedPercent}`}
-              className="hud-speed-badge"
-              initial={{ scale: 0.8, opacity: 0, y: 3 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-            >
-              <span className="badge-bolt">⚡</span>
-              <span>{speedPercent}% SPD</span>
-            </motion.div>
-          )}
-          {bombIncreasePercent > 0 && (
-            <motion.div
-              key={`bomb-${bombIncreasePercent}`}
-              className="hud-bomb-badge"
-              initial={{ scale: 0.8, opacity: 0, y: 3 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-            >
-              <span className="badge-flame">💣</span>
-              <span>+{bombIncreasePercent}%</span>
-            </motion.div>
-          )}
-        </div>
       </div>
 
       {/* Top Center: Combo or subtle mode notice */}
